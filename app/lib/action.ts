@@ -50,17 +50,24 @@ export async function updateInvoice(id: string, formData: FormData) {
  
   const amountInCents = amount * 100;
  
-  await sql`
+  try {
+    await sql`
     UPDATE invoices
     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
     WHERE id = ${id}
-  `;
+    `
+  } catch(err){
+    console.error(err)
+  }
  
   revalidatePath('/dashboard/invoices');//note que é muito importante revalidarmos o cacho do cliente
   redirect('/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string){
+    throw new Error('failed to delete invoice')
+
+    //esse comando não será utilizado enquanto estivermos testando os erros
     await sql`DELETE FROM invoices WHERE id = ${id}`;
     revalidatePath('/dashboard/invoices');
 }
